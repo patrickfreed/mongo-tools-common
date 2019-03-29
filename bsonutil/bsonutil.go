@@ -18,16 +18,54 @@ import (
 	"github.com/mongodb/mongo-tools-common/json"
 	"github.com/mongodb/mongo-tools-common/util"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	gbson "go.mongodb.org/mongo-driver/bson"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 )
 
 var ErrNoSuchField = errors.New("no such field")
 
+func convertExtendedJSONDocumentToBSON(doc map[string]interface{}, canonical bool) error {
+	extJSON, err := gbson.MarshalExtJSON(doc, canonical, false)
+	if err != nil {
+		return fmt.Errorf("can't marshal into extJSON: %v", err)
+	}
+
+	fmt.Println(string(extJSON))
+
+	//var check map[string]interface{}
+	//err = json.Unmarshal(extJSON, &check)
+	//if err != nil {
+	//	return err
+	//}
+	//fmt.Println(check)
+
+	bsonDoc := map[string]interface{}{}
+	err = gbson.UnmarshalExtJSON(extJSON, canonical, &bsonDoc)
+	if err != nil {
+		return fmt.Errorf("can't unmarshal from extJSON: %v", err)
+	}
+
+	for k, v := range bsonDoc {
+		doc[k] = v
+	}
+
+	return nil
+}
+
+// Con
+func ConvertCanonicalExtendedJSONDocumentToBSON(doc map[string]interface{}) error {
+	return convertExtendedJSONDocumentToBSON(doc, true)
+}
+
 // ConvertJSONDocumentToBSON iterates through the document map and converts JSON
 // values to their corresponding BSON values. It also replaces any extended JSON
 // type value (e.g. $date) with the corresponding BSON type.
 func ConvertJSONDocumentToBSON(doc map[string]interface{}) error {
+	return convertExtendedJSONDocumentToBSON(doc, false)
+}
+
+func ConvertJSONDocumentToBSONLegacy(doc map[string]interface{}) error {
 	for key, jsonValue := range doc {
 		var bsonValue interface{}
 		var err error
