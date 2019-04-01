@@ -12,7 +12,7 @@ import (
 	"github.com/mongodb/mongo-tools-common/json"
 	"github.com/mongodb/mongo-tools-common/testtype"
 	. "github.com/smartystreets/goconvey/convey"
-	"gopkg.in/mgo.v2/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 func TestRegExpValue(t *testing.T) {
@@ -28,7 +28,7 @@ func TestRegExpValue(t *testing.T) {
 
 			err := ConvertJSONDocumentToBSON(jsonMap)
 			So(err, ShouldBeNil)
-			So(jsonMap[key], ShouldResemble, bson.RegEx{"foo", "i"})
+			So(jsonMap[key], ShouldResemble, primitive.Regex{"foo", "i"})
 		})
 
 		Convey(`works for RegExp document ('{ "$regex": "foo", "$options": "i" }')`, func() {
@@ -42,7 +42,7 @@ func TestRegExpValue(t *testing.T) {
 
 			err := ConvertJSONDocumentToBSON(jsonMap)
 			So(err, ShouldBeNil)
-			So(jsonMap[key], ShouldResemble, bson.RegEx{"foo", "i"})
+			So(jsonMap[key], ShouldResemble, primitive.Regex{"foo", "i"})
 		})
 
 		Convey(`can use multiple options ('{ "$regex": "bar", "$options": "gims" }')`, func() {
@@ -56,7 +56,7 @@ func TestRegExpValue(t *testing.T) {
 
 			err := ConvertJSONDocumentToBSON(jsonMap)
 			So(err, ShouldBeNil)
-			So(jsonMap[key], ShouldResemble, bson.RegEx{"bar", "gims"})
+			So(jsonMap[key], ShouldResemble, primitive.Regex{"bar", "gims"})
 		})
 
 		Convey(`fails for an invalid option ('{ "$regex": "baz", "$options": "y" }')`, func() {

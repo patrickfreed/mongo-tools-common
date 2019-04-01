@@ -48,11 +48,8 @@ func TestDateValue(t *testing.T) {
 					So(err, ShouldBeNil)
 
 					jsonValue, ok := jsonMap[key].(time.Time)
-					if !ok {
-						fmt.Printf("not ok: %v\n", jsonMap[key])
-					}
 					So(ok, ShouldBeTrue)
-					So(jsonValue.Equal(date), ShouldBeTrue)
+					So(jsonValue, ShouldEqual, date)
 				})
 			}
 
@@ -68,12 +65,12 @@ func TestDateValue(t *testing.T) {
 					},
 				}
 
-				err := ConvertCanonicalExtendedJSONDocumentToBSON(jsonMap)
+				err := ConvertJSONDocumentToBSON(jsonMap)
 				So(err, ShouldBeNil)
 
 				jsonValue, ok := jsonMap[key].(time.Time)
 				So(ok, ShouldBeTrue)
-				So(jsonValue.Equal(date), ShouldBeTrue)
+				So(jsonValue, ShouldEqual, date)
 			})
 		})
 	})

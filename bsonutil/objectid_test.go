@@ -12,11 +12,12 @@ import (
 	"github.com/mongodb/mongo-tools-common/json"
 	"github.com/mongodb/mongo-tools-common/testtype"
 	. "github.com/smartystreets/goconvey/convey"
-	"gopkg.in/mgo.v2/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 func TestObjectIdValue(t *testing.T) {
 	testtype.SkipUnlessTestType(t, testtype.UnitTestType)
+	oid, _ := primitive.ObjectIDFromHex("0123456789abcdef01234567")
 
 	Convey("When converting JSON with ObjectId values", t, func() {
 
@@ -28,7 +29,7 @@ func TestObjectIdValue(t *testing.T) {
 
 			err := ConvertJSONDocumentToBSON(jsonMap)
 			So(err, ShouldBeNil)
-			So(jsonMap[key], ShouldEqual, bson.ObjectIdHex("0123456789abcdef01234567"))
+			So(jsonMap[key], ShouldEqual, oid)
 		})
 
 		Convey(`works for ObjectId document ('{ "$oid": "0123456789abcdef01234567" }')`, func() {
@@ -41,7 +42,7 @@ func TestObjectIdValue(t *testing.T) {
 
 			err := ConvertJSONDocumentToBSON(jsonMap)
 			So(err, ShouldBeNil)
-			So(jsonMap[key], ShouldEqual, bson.ObjectIdHex("0123456789abcdef01234567"))
+			So(jsonMap[key], ShouldEqual, oid)
 		})
 	})
 }

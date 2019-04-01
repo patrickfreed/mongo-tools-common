@@ -7,8 +7,8 @@
 package db
 
 import (
-	gbson "go.mongodb.org/mongo-driver/bson"
-	"gopkg.in/mgo.v2/bson"
+	"go.mongodb.org/mongo-driver/bson"
+	mgobson "gopkg.in/mgo.v2/bson"
 
 	"fmt"
 	"io"
@@ -66,12 +66,12 @@ func (dbs *DecodedBSONSource) Err() error {
 
 // Next unmarshals the next BSON document into result. Returns true if no errors
 // are encountered and false otherwise.
-func (dbs *DecodedBSONSource) Next(result interface{}) bool {
+func (dbs *DecodedBSONSource) NextMGOBSON(result interface{}) bool {
 	doc := dbs.LoadNext()
 	if doc == nil {
 		return false
 	}
-	if err := bson.Unmarshal(doc, result); err != nil {
+	if err := mgobson.Unmarshal(doc, result); err != nil {
 		dbs.err = err
 		return false
 	}
@@ -81,12 +81,12 @@ func (dbs *DecodedBSONSource) Next(result interface{}) bool {
 
 // NextGBSON unmarshals the next BSON document into result using the official go driver. Returns true if no errors are
 // encountered and false otherwise. This function does NOT zero out the result before writing to it.
-func (dbs *DecodedBSONSource) NextGBSON(result interface{}) bool {
+func (dbs *DecodedBSONSource) Next(result interface{}) bool {
 	doc := dbs.LoadNext()
 	if doc == nil {
 		return false
 	}
-	if err := gbson.Unmarshal(doc, result); err != nil {
+	if err := bson.Unmarshal(doc, result); err != nil {
 		dbs.err = err
 		return false
 	}
